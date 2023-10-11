@@ -1,0 +1,30 @@
+version: '3'
+services:
+  db:
+    container_name: postgres_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: mydatabase
+  flask:
+    build: ./backend
+    container_name: backend-flask
+    environment:
+      # для отладки (при запуске в релиз убрать!)
+      - FLASK_ENV=development
+      - PYTHONUNBUFFERED=True
+    restart: on-failure
+    volumes:
+      - ./backend:/backend
+    ports:
+      - "5000:5000"
+    command: python app.py
+
+volumes:
+  postgres_data:
